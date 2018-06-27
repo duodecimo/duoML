@@ -9,16 +9,16 @@ clf = joblib.load("digits_cls.pkl")
 
 # Read the input image 
 #im = cv2.imread("photo_2.jpg")
-im = cv2.imread("elHealth.png")
+im = cv2.imread("elLoad.png")
 
 # Convert to grayscale and apply Gaussian filtering
 im_gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 im_gray = cv2.GaussianBlur(im_gray, (5, 5), 0)
 
 # Threshold the image
-ret, im_th = cv2.threshold(im_gray, 90, 255, cv2.THRESH_BINARY_INV)
+#ret, im_th = cv2.threshold(im_gray, 90, 255, cv2.THRESH_BINARY_INV)
 #ret, im_th = cv2.threshold(im_gray, 90, 255, cv2.THRESH_BINARY)
-#ret, im_th = cv2.threshold(im_gray, 55, 255, cv2.THRESH_BINARY_INV)
+ret, im_th = cv2.threshold(im_gray, 75, 255, cv2.THRESH_BINARY_INV)
 
 cv2.imshow('image1',im_gray)
 cv2.imshow('image2',im_th)
