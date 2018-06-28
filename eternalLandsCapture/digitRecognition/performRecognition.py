@@ -18,7 +18,7 @@ im_gray = cv2.GaussianBlur(im_gray, (5, 5), 0)
 # Threshold the image
 #ret, im_th = cv2.threshold(im_gray, 90, 255, cv2.THRESH_BINARY_INV)
 #ret, im_th = cv2.threshold(im_gray, 90, 255, cv2.THRESH_BINARY)
-ret, im_th = cv2.threshold(im_gray, 75, 255, cv2.THRESH_BINARY_INV)
+ret, im_th = cv2.threshold(im_gray, 75, 255, cv2.THRESH_BINARY)
 
 cv2.imshow('image1',im_gray)
 cv2.imshow('image2',im_th)
@@ -26,7 +26,9 @@ k = cv2.waitKey(0) & 0xFF
 
 # Find contours in the image
 #ctrs, hier, _ = cv2.findContours(im_th.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-im2, ctrs, hier = cv2.findContours(im_th.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+#im2, ctrs, hier = cv2.findContours(im_th.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+im2, ctrs, hier = cv2.findContours(im_gray.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
 print('contours: ', ctrs)
 
@@ -51,6 +53,8 @@ for rect in rects:
     roi_hog_fd = hog(roi, orientations=9, pixels_per_cell=(14, 14), cells_per_block=(1, 1), visualise=False)
     nbr = clf.predict(np.array([roi_hog_fd], 'float64'))
     cv2.putText(im, str(int(nbr[0])), (rect[0], rect[1]),cv2.FONT_HERSHEY_DUPLEX, 2, (0, 255, 255), 3)
+    
+    print('nbr: ', int(nbr[0]))
 
 cv2.imshow("Resulting Image with Rectangular ROIs", im)
 cv2.waitKey() & 0xFF

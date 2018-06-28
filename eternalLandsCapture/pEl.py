@@ -21,7 +21,7 @@ print('height: ', vheight, ' width: ', vwidth)
 wipfood = int((148 * 100 / 1545) / 100 * width)
 wiphealth = int((289 * 100 / 1545) / 100 * width)
 wipload = int((430 * 100 / 1545) / 100 * width)
-hip = int((816 * 100 / 866) / 100 * height)
+hip = int((818 * 100 / 866) / 100 * height)
 print('origins: food(', hip, ',', wipfood, ') health(', hip, ',', wiphealth, ') load(', hip, ',', wipload, ')')
 imgFood = imgB[hip:hip+vheight, wipfood:wipfood+vwidth]
 imgHealth = imgB[hip:hip+vheight, wiphealth:wiphealth+vwidth]
@@ -33,6 +33,18 @@ ret,imgFood = cv2.threshold(imgFood, 75, 255, cv2.THRESH_BINARY_INV)
 ret,imgHealth = cv2.threshold(imgHealth, 75, 255, cv2.THRESH_BINARY_INV)
 ret,imgLoad = cv2.threshold(imgLoad, 75, 255, cv2.THRESH_BINARY_INV)
 
+mask = 255 * np.ones((60, 60), np.uint8)
+mask[18:18+13, 12:12+28] = imgFood
+imgFood = cv2.resize(mask, (1200, 1200), interpolation = cv2.INTER_AREA)
+
+mask = 255 * np.ones((60, 60), np.uint8)
+mask[18:18+13, 12:12+28] = imgHealth
+imgHealth = cv2.resize(mask, (1200, 1200), interpolation = cv2.INTER_AREA)
+
+mask = 255 * np.ones((60, 60), np.uint8)
+mask[18:18+13, 12:12+28] = imgLoad
+imgLoad = cv2.resize(mask, (1200, 1200), interpolation = cv2.INTER_AREA)
+
 #cv2.imshow('image',imgHarv)
 titles = ['food', 'health', 'load']
 images = [imgFood, imgHealth, imgLoad]
@@ -42,15 +54,38 @@ for i in range(3):
     plt.xticks([]),plt.yticks([])
 plt.show()
 
-k = cv2.waitKey(0) & 0xFF
-if k == 27:         # wait for ESC key to exit
-    cv2.destroyAllWindows()
-elif k == ord('s'): # wait for 's' key to save and exit
-    #cv2.imwrite('elHarvesting.png',imgHarv)
-    cv2.imwrite('elHealth.png',imgHealth)
-    cv2.imwrite('elFood.png',imgFood)
-    cv2.imwrite('elLoad.png',imgLoad)
-    cv2.destroyAllWindows()
+#cv2.imwrite('elHarvesting.png',imgHarv)
+cv2.imwrite('elHealth.png',imgHealth)
+cv2.imwrite('elFood.png',imgFood)
+cv2.imwrite('elLoad.png',imgLoad)
+
+
+# find contours in the thresholded image, then initialize the
+# digit contours lists
+cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+cv2.CHAIN_APPROX_SIMPLE)
+cnts = cnts[0] if imutils.is_cv2() else cnts[1]
+digitCnts = []
+ 
+# loop over the digit area candidates
+for c in cnts:
+# compute the bounding box of the contour
+(x, y, w, h) = cv2.boundingRect(c)
+ 
+# if the contour is sufficiently large, it must be a digit
+if w >= 15 and (h >= 30 and h <= 40):
+digitCnts.append(c)
+
+
+#k = cv2.waitKey(0) & 0xFF
+#if k == 27:         # wait for ESC key to exit
+#    cv2.destroyAllWindows()
+#elif k == ord('s'): # wait for 's' key to save and exit
+#    #cv2.imwrite('elHarvesting.png',imgHarv)
+#    cv2.imwrite('elHealth.png',imgHealth)
+#    cv2.imwrite('elFood.png',imgFood)
+#    cv2.imwrite('elLoad.png',imgLoad)
+#    cv2.destroyAllWindows()
 
 #img = cv.medianBlur(img,5)
 #ret,th1 = cv.threshold(img,127,255,cv.THRESH_BINARY)
